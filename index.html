@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Неоновое сердце</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        #btn {
+            padding: 20px 40px; font-size: 24px; background: transparent; color: #ff00ff;
+            border: 3px solid #ff00ff; cursor: pointer; border-radius: 15px;
+            box-shadow: 0 0 20px #ff00ff; z-index: 10; transition: 0.3s;
+            font-family: sans-serif; font-weight: bold;
+        }
+        #btn:hover { background: #ff00ff; color: #000; box-shadow: 0 0 40px #ff00ff; }
+    </style>
+</head>
+<body>
+
+<button id="btn">Нажми :3</button>
+
+<script>
+    let particles = [];
+    let started = false;
+
+    function setup() {
+        createCanvas(windowWidth, windowHeight);
+    }
+
+    function draw() {
+        background(0, 30); 
+        if (started) {
+            particles.forEach(p => {
+                p.update();
+                p.show();
+            });
+        }
+    }
+
+    document.getElementById('btn').onclick = function() {
+        this.style.display = 'none';
+        started = true;
+        // Увеличили количество частиц до 5000 для "жирности"
+        for (let i = 0; i < 5000; i++) {
+            particles.push(new Particle());
+        }
+    };
+
+    class Particle {
+        constructor() {
+            let t = random(TWO_PI);
+            // Формула сердца
+            let x = 16 * pow(sin(t), 3);
+            let y = -(13 * cos(t) - 5 * cos(2*t) - 2 * cos(3*t) - cos(4*t));
+            // Масштабируем сердце (x 25 делает его больше)
+            this.target = createVector(x * 25 + width/2, y * 25 + height/2);
+            this.pos = createVector(random(width), random(height));
+            this.vel = p5.Vector.random2D().mult(random(2, 5));
+            this.color = color(random(200, 255), 0, random(200, 255));
+        }
+        update() {
+            let steering = p5.Vector.sub(this.target, this.pos);
+            steering.setMag(0.4);
+            this.vel.add(steering);
+            this.pos.add(this.vel);
+            this.vel.mult(0.9);
+        }
+        show() {
+            stroke(this.color);
+            // Увеличили размер точки (strokeWeight) для "жирности"
+            strokeWeight(4); 
+            point(this.pos.x, this.pos.y);
+        }
+    }
+</script>
+</body>
+</html>
