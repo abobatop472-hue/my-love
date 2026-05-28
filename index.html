@@ -2,11 +2,17 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Сюрприз для тебя</title>
+    <title>Для тебя</title>
     <style>
-        body { margin: 0; background: #ffe6e6; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; font-family: sans-serif; }
-        button { padding: 15px 30px; font-size: 20px; cursor: pointer; background: #ff4d6d; color: white; border: none; border-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10; transition: transform 0.2s; }
-        button:hover { transform: scale(1.1); }
+        body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        button { 
+            padding: 20px 40px; font-size: 24px; cursor: pointer; 
+            background: transparent; color: #ff0055; border: 2px solid #ff0055; 
+            border-radius: 50px; z-index: 10; transition: 0.3s;
+            text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 0 0 10px #ff0055;
+        }
+        button:hover { background: #ff0055; color: white; box-shadow: 0 0 30px #ff0055; }
         canvas { position: absolute; top: 0; left: 0; }
     </style>
 </head>
@@ -30,18 +36,21 @@
             this.y = Math.random() * canvas.height;
             this.targetX = x;
             this.targetY = y;
-            this.color = Math.random() > 0.5 ? '#ff4d6d' : '#ff8fa3';
-            this.size = Math.random() * 5 + 2;
+            // Делаем частицы чуть крупнее для "жирного" эффекта
+            this.size = Math.random() * 8 + 4; 
         }
         draw() {
-            ctx.fillStyle = this.color;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#ff0055';
+            ctx.fillStyle = '#ff0055';
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
             ctx.fill();
         }
         update() {
-            this.x += (this.targetX - this.x) * 0.05;
-            this.y += (this.targetY - this.y) * 0.05;
+            // Более медленное, плавное движение (0.02 вместо 0.05)
+            this.x += (this.targetX - this.x) * 0.02;
+            this.y += (this.targetY - this.y) * 0.02;
         }
     }
 
@@ -50,16 +59,18 @@
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
         
-        for (let i = 0; i < 500; i++) {
-            // Формула сердца
+        for (let i = 0; i < 600; i++) {
             const t = Math.random() * Math.PI * 2;
+            // Увеличили масштаб сердца (* 25 вместо * 20)
             const x = 16 * Math.pow(Math.sin(t), 3);
             const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-            particles.push(new Particle(centerX + x * 20, centerY + y * 20 - 50));
+            particles.push(new Particle(centerX + x * 25, centerY + y * 25 - 50));
         }
 
         function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Оставляем небольшой след, чтобы движение казалось мягче
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             particles.forEach(p => { p.update(); p.draw(); });
             requestAnimationFrame(animate);
         }
